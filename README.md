@@ -12,6 +12,14 @@ While the original is built on Fastify, this version leverages Netlify's infrast
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/kaungkhantjc/dicebear-netlify)
 
+## ⚡ Global High-Performance Caching
+
+This fork is pre-configured with professional-grade caching headers to minimize latency and function execution costs:
+
+* **Netlify Durable Cache:** Avatars are cached globally across all Netlify edge nodes. Once an avatar is generated, it is served from the edge nearest to the user, completely bypassing function execution.
+* **Stale-While-Revalidate (SWR):** If the cache expires, the edge serves the "stale" version instantly while regenerating the new one in the background. Users never wait for a cold start.
+* **Browser Immutability:** Uses `immutable` headers to ensure browsers cache the avatars locally for up to a year, making repeat page loads near-instant.
+
 ## ⚙️ Environment Variables
 
 To ensure the API runs correctly in a serverless environment, you **must** set these variables. Specifically, the `*_EXIF` variables must be disabled because the underlying EXIF tools require `Perl` and `procps`, which are not fully available in the standard Lambda runtime.
@@ -45,6 +53,7 @@ This repository has been refactored through several atomic stages to ensure serv
 3. **Static Version Mapping:** Switched from dynamic imports to static mappings for avatar styles, allowing bundlers like `esbuild` to trace and include all necessary modules.
 4. **Hybrid ESM/CJS Architecture:** Implemented a custom `esbuild` bundling script with a `.cjs` wrapper to bridge modern ESM code with Netlify's function execution environment.
 5. **Optimized Configuration:** Added a `netlify.toml` pre-configured with the `nft` bundler and universal redirects.
+6. **Advanced Caching Hook:** Integrated a Fastify `onSend` hook to inject `Netlify-CDN-Cache-Control` and `CDN-Cache-Control` headers globally.
 
 ## Credits & Sponsors
 
