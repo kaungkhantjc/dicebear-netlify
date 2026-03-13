@@ -2,8 +2,16 @@ import path from 'path';
 import { Font } from '../types.js';
 import { fileURLToPath } from 'url';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const FONTS_DIR = path.join(__dirname, '../../fonts');
+let rootDir: string;
+if (process.env.LAMBDA_TASK_ROOT) {
+  rootDir = process.env.LAMBDA_TASK_ROOT;
+} else if (typeof __dirname !== 'undefined') {
+  rootDir = path.join(__dirname, '../../');
+} else {
+  rootDir = path.join(fileURLToPath(new URL('.', import.meta.url)), '../../');
+}
+
+const FONTS_DIR = path.join(rootDir, 'fonts');
 
 // Extract text content between <text> tags using indexOf for safety (no regex backtracking)
 function extractTextContent(svg: string): string[] {

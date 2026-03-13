@@ -11,7 +11,15 @@ import { fileURLToPath } from 'url';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
+// Replace the old __dirname with this rootDir fallback
+let rootDir: string;
+if (process.env.LAMBDA_TASK_ROOT) {
+  rootDir = process.env.LAMBDA_TASK_ROOT;
+} else if (typeof __dirname !== 'undefined') {
+  rootDir = path.join(__dirname, '../');
+} else {
+  rootDir = path.join(fileURLToPath(new URL('.', import.meta.url)), '../');
+}
 
 export const app = async () => {
   const app = fastify({
@@ -30,7 +38,7 @@ export const app = async () => {
   });
 
   const fonts = JSON.parse(
-    await fs.readFile(path.join(__dirname, '../fonts/fonts.json'), 'utf-8'),
+    await fs.readFile(path.join(rootDir, 'fonts/fonts.json'), 'utf-8'),
   ) as Font[];
 
   app.decorate('fontLookup', new FontLookup(fonts));
