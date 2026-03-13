@@ -1,0 +1,19 @@
+[build]
+  # Runs the standard build, then our custom Lambda bundle script
+  command = "npm run build && node scripts/build-lambda.js"
+
+[functions]
+  # 'nft' is crucial here. It preserves the native binaries for sharp/resvg better than zisi
+  node_bundler = "nft"
+  included_files = [
+    "fonts/**", 
+    "node_modules/sharp/**/*", 
+    "node_modules/@img/**/*", 
+    "node_modules/@resvg/**/*", 
+    "netlify-dist/bundle.mjs"
+  ]
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api"
+  status = 200
